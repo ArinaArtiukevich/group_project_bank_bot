@@ -10,10 +10,10 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from modules.currency import CurrencyParsing, CurrencyExchange
 import joblib
 
-CURRENCY_FROM, CURRENCY_TO, EXCHANGE_WAY = range(3)
+DEFAULT_EXCHANGE, CURRENCY_FROM, CURRENCY_TO, EXCHANGE_WAY = range(4)
+EXCHANGE_AIM = [["BYN", "Конверсия"]]
 EXCHANGE_CHOICE_WAY = [['Цифровой банк', 'По карточке', 'Наличные']]
-CURRENCY_AVAILABLE = [['BYN', 'USD', 'EUR', 'RUB']]
-DEFAULT_CURRENCY = 'BYN'
+CURRENCY_AVAILABLE = [['USD', 'EUR', 'RUB']]
 
 morpher = pymorphy2.MorphAnalyzer()
 key_lemmas_vectors = joblib.load('./lemmas.pickle')
@@ -33,12 +33,44 @@ async def currency_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Для более точного ответа необходимо ответить на дополнительные вопросы.\n"
         "Команда /cancel, чтобы прекратить разговор.\n\n"
-        "Пожалуйста, выберите имеющуюся валюту.",
+        "Пожалуйста, выберите интересующий обмен.",
         reply_markup=ReplyKeyboardMarkup(
-            CURRENCY_AVAILABLE, one_time_keyboard=True
+            EXCHANGE_AIM, one_time_keyboard=True
         ),
     )
-    return CURRENCY_FROM
+    return DEFAULT_EXCHANGE
+
+
+async def default_exchange_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    way_input = update.message.text
+    result = ConversationHandler.END
+    if way_input == EXCHANGE_AIM[0][0]:
+        context.user_data["BYN"] = 1
+        await update.message.reply_text(
+            "Пожалуйста, выберите валюту.",
+            reply_markup=ReplyKeyboardMarkup(
+                CURRENCY_AVAILABLE, one_time_keyboard=True
+            ),
+        )
+        result = CURRENCY_TO
+    elif way_input == EXCHANGE_AIM[0][1]:
+        context.user_data["BYN"] = 0
+        await update.message.reply_text(
+            "Пожалуйста, выберите имеющуюся валюту.",
+            reply_markup=ReplyKeyboardMarkup(
+                CURRENCY_AVAILABLE, one_time_keyboard=True
+            ),
+        )
+        result = CURRENCY_FROM
+    else:
+        print("s")
+        await update.message.reply_text(
+            "Неверные данные, пожалуйста, попробуйте снова.",
+            reply_markup=ReplyKeyboardRemove(),
+        )
+        result = ConversationHandler.END
+
+    return result
 
 
 async def currency_from_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -93,22 +125,24 @@ async def exchange_way_command(update: Update, context: ContextTypes.DEFAULT_TYP
             reply_markup=ReplyKeyboardRemove()
         )
     else:
-        currency_from = context.user_data["currency_from"]
-        currency_to = context.user_data["currency_to"]
-
         # currency_parsing = CurrencyParsing()
         # currency_parsing.create_currency_dataframe()
 
         currency_exchange = CurrencyExchange()
         currency_exchange.read_dataframe_csv()
         currency_exchange.df_expand_conversion()
-
-        df = currency_exchange.get_currency_exchange(
-            currency_from=currency_from,
-            # aim=np.array(['buy']),
-            exchange_way=np.array(exchange_way),
-            currency_to=currency_to
-        )
+        if context.user_data["BYN"]:
+            df = currency_exchange.get_currency_exchange(
+                currency_from=context.user_data["currency_to"],
+                exchange_way=np.array(exchange_way),
+            )
+        else:
+            df = currency_exchange.get_currency_exchange(
+                currency_from=context.user_data["currency_from"],
+                aim=np.array(['buy']),
+                exchange_way=np.array(exchange_way),
+                currency_to=context.user_data["currency_to"]
+            )
         await update.message.reply_text(
             currency_exchange.df_prettifier(df)
         )
@@ -157,9 +191,9 @@ if __name__ == '__main__':
     app.add_handler(CommandHandler('help', help_command))
 
     conv_handler = ConversationHandler(
-        # currency_from currency_to exchange_way
         entry_points=[CommandHandler('currency', currency_command)],
         states={
+            DEFAULT_EXCHANGE: [MessageHandler(filters.TEXT, default_exchange_command)],
             CURRENCY_FROM: [MessageHandler(filters.TEXT, currency_from_command)],
             CURRENCY_TO: [MessageHandler(filters.TEXT, currency_to_command)],
             EXCHANGE_WAY: [MessageHandler(filters.TEXT, exchange_way_command)]

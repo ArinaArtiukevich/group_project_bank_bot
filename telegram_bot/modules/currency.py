@@ -92,6 +92,7 @@ class CurrencyExchange:
     CONVERSION_COLUMN_NAME = 'conversion'
     BUY_COLUMN_NAME = 'buy'
     SELL_COLUMN_NAME = 'sell'
+    DEFAULT_CURRENCY = 'BYN'
 
     CURRENCY_DIVISION_SIGN = ' / '
 
@@ -155,6 +156,7 @@ class CurrencyExchange:
 
     def get_df_conversion_limit(self, df: pd.DataFrame, currency_to: np.array = None) -> pd.DataFrame:
         df_modified = df.copy()
+
         if currency_to is not None:
             if not np.isin(currency_to, self.CURRENCY).all():
                 currency_to = self.CURRENCY
@@ -164,6 +166,13 @@ class CurrencyExchange:
                 currency_to_patterns.append('(/ ' + val + ')')
             pattern = r'{}'.format('|'.join(currency_to_patterns))
             df_modified = df_modified[df_modified[self.CURRENCY_COLUMN_NAME].str.findall(pattern).astype(bool)]
+        else:
+            df_modified = df_modified[~df_modified[self.CONVERSION_COLUMN_NAME].astype(bool)]
+            currency_to_patterns = []
+            for val in self.CURRENCY:
+                currency_to_patterns.append('(/ ' + val + ')')
+            pattern = r'{}'.format('|'.join(currency_to_patterns))
+            df_modified = df_modified[~df_modified[self.CURRENCY_COLUMN_NAME].str.findall(pattern).astype(bool)]
         return df_modified
 
     def get_currency_exchange(self, currency_from: np.array = None, currency_to: np.array = None,

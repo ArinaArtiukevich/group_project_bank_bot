@@ -1,7 +1,1 @@
 API_KEY = '5994105371:AAGWpu-xD3dcVA9A7IH31j9lmD3wdlXcxls'
-
-
-# TODO
-API_KEY_ARINA = '6117243878:AAE5d17bMGZmN-wE4BHq4ntgDAgikEcT-mI'
-
-# '@project_prior_bot'
