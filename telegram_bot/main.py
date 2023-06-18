@@ -1,14 +1,14 @@
-import pandas as pd
 import numpy as np
-import re
+import requests
 import pymorphy2
-from sklearn.feature_extraction.text import CountVectorizer
+import re
+import joblib
+
+from constants import FAST_API_ARINA, API_KEY_ARINA
+from typing import List
 from sklearn.metrics.pairwise import cosine_similarity
-import constants
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
-from modules.currency import CurrencyParsing, CurrencyExchange
-import joblib
 
 DEFAULT_EXCHANGE, CURRENCY_FROM, CURRENCY_TO, EXCHANGE_WAY = range(4)
 EXCHANGE_AIM = [["BYN", "Конверсия"]]
@@ -63,7 +63,6 @@ async def default_exchange_command(update: Update, context: ContextTypes.DEFAULT
         )
         result = CURRENCY_FROM
     else:
-        print("s")
         await update.message.reply_text(
             "Неверные данные, пожалуйста, попробуйте снова.",
             reply_markup=ReplyKeyboardRemove(),
@@ -104,49 +103,76 @@ async def currency_to_command(update: Update, context: ContextTypes.DEFAULT_TYPE
         result = ConversationHandler.END
     else:
         context.user_data["currency_to"] = currency_to_input
-        await update.message.reply_text(
-            "Пожалуйста, выберите способ обмена.",
-            reply_markup=ReplyKeyboardMarkup(
-                EXCHANGE_CHOICE_WAY, one_time_keyboard=True
-            ),
-        )
+        if not context.user_data["BYN"]:
+            currency_to = set(currency_to_input)
+            currency_from = set(context.user_data["currency_from"])
+            if currency_to & currency_from:
+                await update.message.reply_text(
+                    "Пожалуйста, выберите разные валюты.",
+                    reply_markup=ReplyKeyboardRemove()
+                )
+                result = ConversationHandler.END
+        if result is not ConversationHandler.END:
+            await update.message.reply_text(
+                "Пожалуйста, выберите способ обмена.",
+                reply_markup=ReplyKeyboardMarkup(
+                    EXCHANGE_CHOICE_WAY, one_time_keyboard=True
+                ),
+            )
     return result
 
 
 async def exchange_way_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    exchange_way = np.array([
+    exchange_way = [
         way
         for way in EXCHANGE_CHOICE_WAY[0]
         if way[0] in update.message.text
-    ])
+    ]
     if not exchange_way:
         await update.message.reply_text(
             "Неверные данные, пожалуйста, попробуйте снова.",
             reply_markup=ReplyKeyboardRemove()
         )
     else:
-        # currency_parsing = CurrencyParsing()
-        # currency_parsing.create_currency_dataframe()
+        # загружаю обновленный df в файл "../priorbank_currency_exchange.csv"
+        # requests.get(FAST_API_ARINA + '/currency/uploaded_currency')
 
-        currency_exchange = CurrencyExchange()
-        currency_exchange.read_dataframe_csv()
-        currency_exchange.df_expand_conversion()
         if context.user_data["BYN"]:
-            df = currency_exchange.get_currency_exchange(
-                currency_from=context.user_data["currency_to"],
-                exchange_way=np.array(exchange_way),
-            )
+            params_request = await create_byn_request(context.user_data["currency_to"], exchange_way)
+            request = FAST_API_ARINA + "/currency/BYN" + '?' + params_request
+            response = requests.get(request)
         else:
-            df = currency_exchange.get_currency_exchange(
-                currency_from=context.user_data["currency_from"],
-                aim=np.array(['buy']),
-                exchange_way=np.array(exchange_way),
-                currency_to=context.user_data["currency_to"]
-            )
+            params_request = await create_conversion_request(context.user_data["currency_to"], exchange_way,
+                                                             context.user_data["currency_from"])
+            request = FAST_API_ARINA + "/currency/conversion" + '?' + params_request
+            response = requests.get(request)
+
         await update.message.reply_text(
-            currency_exchange.df_prettifier(df)
+            response.json()
         )
     return ConversationHandler.END
+
+
+async def create_byn_request(currency_to_list: List[str], exchange_way: List[str]) -> str:
+    currency_to_reqeust = ""
+    exchange_way_reqeust = ""
+    for currency_to in currency_to_list:
+        currency_to_reqeust += f'currency_to={currency_to}' if not len(
+            currency_to_reqeust) else f'&currency_to={currency_to}'
+    for way in exchange_way:
+        exchange_way_reqeust += f'exchange_way={way}' if not len(
+            exchange_way_reqeust) else f'&exchange_way={way}'
+    return currency_to_reqeust + '&' + exchange_way_reqeust
+
+
+async def create_conversion_request(currency_to_list: List[str], exchange_way: List[str],
+                                    currency_from_list: List[str]) -> str:
+    conversion_request = await create_byn_request(currency_to_list, exchange_way)
+    currency_from_reqeust = ""
+    for currency_from in currency_from_list:
+        currency_from_reqeust += f'currency_from={currency_from}' if not len(
+            currency_from_reqeust) else f'&currency_from={currency_from}'
+    return conversion_request + "&" + currency_from_reqeust
 
 
 async def cancel_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -185,7 +211,7 @@ async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
 if __name__ == '__main__':
     print('Bot Started')
 
-    app = Application.builder().token(constants.API_KEY_ARINA).build()
+    app = Application.builder().token(API_KEY_ARINA).build()
 
     app.add_handler(CommandHandler('start', start_command))
     app.add_handler(CommandHandler('help', help_command))

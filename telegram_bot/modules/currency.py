@@ -206,7 +206,7 @@ class CurrencyExchange:
             result = result + " используя способ обмена {}".format(exchange_way)
         if sell is not None:
             result = result + " \n "
-            result = result + "Продажа {} из {}".format(from_to[0], from_to[1])
+            result = result + "Продажа {} -> {}".format(from_to[0], from_to[1])
             result = result + " по курсу {}".format(sell)
             result = result + " используя способ обмена {}".format(exchange_way)
         return result
