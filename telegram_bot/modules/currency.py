@@ -1,20 +1,21 @@
 import pandas as pd
 import numpy as np
-import requests
 import bs4
 from typing import List
 
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
+from telegram_bot.utilities.constants import CURRENCY_DF_PATH
+
+
 class CurrencyParsing:
     BASIC_URL = 'https://www.priorbank.by/offers/services/currency-exchange'
-    SAVE_LINK = r"../priorbank_currency_exchange.csv"
 
-    def __init__(self, url: str = None, driver: webdriver = None, save_link: str = None):
+    def __init__(self, url: str = None, driver: webdriver = webdriver.Chrome(ChromeDriverManager().install()), save_link: str = CURRENCY_DF_PATH):
         self.url = url if url != None else self.BASIC_URL
-        self.driver = driver if driver != None else webdriver.Chrome(ChromeDriverManager().install())
-        self.save_link = save_link if save_link != None else self.SAVE_LINK
+        self.driver = driver
+        self.save_link = save_link
         self.df: pd.DataFrame
 
     def save_dataframe_csv(self, df: pd.DataFrame):
@@ -45,7 +46,6 @@ class CurrencyParsing:
 
     def create_currency_dataframe(self) -> pd.DataFrame:
         df = pd.DataFrame(columns=['exchange_way', 'currency', 'buy', 'sell', 'buy_sell', 'conversion'])
-        # открываю через selenium, тк через bs4 у меня почему-то не отображаются цифры
         self.driver.get(self.url)
         driver_parser = bs4.BeautifulSoup(self.driver.page_source, features="html.parser")
 
@@ -53,7 +53,6 @@ class CurrencyParsing:
 
         list_exchange_way = exchange_way_categories.find_all('li')
         divs_exchange_way = driver_parser.find_all('div', attrs={'class': 'smartfox--calc'})
-
         # [цифровой банк, по карточке, наличные]
         for i in range(len(list_exchange_way)):
             way = list_exchange_way[i].getText()
@@ -70,14 +69,12 @@ class CurrencyParsing:
                 df = pd.concat([df, self.parse_rows(exchange_way=way, div_rows=buy_sell_row, is_conversion=False)])
                 conversion_row = divs_exchange_way[i].find_all('div', attrs={'class': "homeModuleRow"})[1]
                 df = pd.concat([df, self.parse_rows(exchange_way=way, div_rows=conversion_row, is_conversion=True)])
-
         self.df = df.reset_index(drop=True)
         self.save_dataframe_csv(self.df)
         return self.df
 
 
 class CurrencyExchange:
-    DATA_CSV_PATH = r"../priorbank_currency_exchange.csv"
 
     EXCHANGE_WAY = np.array(['Цифровой банк', 'По карточке', 'Наличные'])
     CURRENCY = np.array(['USD', 'EUR', 'RUB'])
@@ -99,7 +96,7 @@ class CurrencyExchange:
     def __init__(self):
         self.df: pd.DataFrame
 
-    def read_dataframe_csv(self, path: str = DATA_CSV_PATH) -> pd.DataFrame:
+    def read_dataframe_csv(self, path: str = CURRENCY_DF_PATH) -> pd.DataFrame:
         self.df = pd.read_csv(path, sep='\t')
         return self.df
 

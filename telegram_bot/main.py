@@ -4,7 +4,7 @@ import pymorphy2
 import re
 import joblib
 
-from constants import FAST_API_ARINA, API_KEY_ARINA
+from telegram_bot.utilities.constants import FAST_API_ARINA, API_KEY_ARINA
 from sklearn.metrics.pairwise import cosine_similarity
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
@@ -133,8 +133,6 @@ async def exchange_way_command(update: Update, context: ContextTypes.DEFAULT_TYP
             reply_markup=ReplyKeyboardRemove()
         )
     else:
-        # загружаю обновленный df в файл "../priorbank_currency_exchange.csv"
-        # requests.get(FAST_API_ARINA + '/currency/uploaded_currency')
         if context.user_data['BYN']:
             request = FAST_API_ARINA + '/currency/BYN'
             params = {

@@ -1,27 +1,36 @@
-# todo delete uvicorn fast_api:app --reload --port 9000
-import numpy as np
-from fastapi import FastAPI, Query, Response
-from modules.currency import CurrencyParsing, CurrencyExchange
+import datetime
 from typing import List
+
+import numpy as np
+from apscheduler.schedulers.background import BackgroundScheduler
+from fastapi import FastAPI, Query
+from fastapi_utils.tasks import repeat_every
+
+from telegram_bot.modules.currency import CurrencyParsing, CurrencyExchange
 
 app = FastAPI()
 
 
-# todo causes error Unresolved reference for variables
-# @app.on_event("startup")
-# async def startup_event():
-    # currency_parsing = CurrencyParsing()
-    # currency_exchange = CurrencyExchange()
-    # currency_exchange.read_dataframe_csv()
-    # currency_exchange.df_expand_conversion()
-
-
-@app.get("/currency/uploaded_currency")
-async def parse_currency():
+@app.on_event("startup")
+def parse_currency():
     currency_parsing = CurrencyParsing()
-    df = currency_parsing.create_currency_dataframe()
-    return Response(df.to_json(orient="records"), media_type="application/json")
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(
+        currency_parsing.create_currency_dataframe,
+        "interval",
+        seconds=60,
+        start_date=datetime.datetime(2023, 7, 12, 17, 58, 0)
+    )
+    scheduler.start()
 
+
+# todo same but only seconds param is available
+# todo function must be async
+# @app.on_event("startup")
+# @repeat_every(seconds=60 * 60 * 24)
+# async def parse_currency():
+#     await currency_parsing.create_currency_dataframe()
+#
 
 @app.get("/currency/BYN")
 async def exchange_byn(currency_to: List[str] | None = Query(), exchange_way: List[str] | None = Query()):
