@@ -5,7 +5,6 @@ import re
 import joblib
 
 from constants import FAST_API_ARINA, API_KEY_ARINA
-from typing import List
 from sklearn.metrics.pairwise import cosine_similarity
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
@@ -136,43 +135,25 @@ async def exchange_way_command(update: Update, context: ContextTypes.DEFAULT_TYP
     else:
         # загружаю обновленный df в файл "../priorbank_currency_exchange.csv"
         # requests.get(FAST_API_ARINA + '/currency/uploaded_currency')
-
-        if context.user_data["BYN"]:
-            params_request = await create_byn_request(context.user_data["currency_to"], exchange_way)
-            request = FAST_API_ARINA + "/currency/BYN" + '?' + params_request
-            response = requests.get(request)
+        if context.user_data['BYN']:
+            request = FAST_API_ARINA + '/currency/BYN'
+            params = {
+                'currency_to': context.user_data['currency_to'],
+                'exchange_way': exchange_way
+            }
         else:
-            params_request = await create_conversion_request(context.user_data["currency_to"], exchange_way,
-                                                             context.user_data["currency_from"])
-            request = FAST_API_ARINA + "/currency/conversion" + '?' + params_request
-            response = requests.get(request)
+            request = FAST_API_ARINA + '/currency/conversion'
+            params = {
+                'currency_to': context.user_data['currency_to'],
+                'exchange_way': exchange_way,
+                'currency_from': context.user_data['currency_from']
+            }
 
+        response = requests.get(request, params)
         await update.message.reply_text(
             response.json()
         )
     return ConversationHandler.END
-
-
-async def create_byn_request(currency_to_list: List[str], exchange_way: List[str]) -> str:
-    currency_to_reqeust = ""
-    exchange_way_reqeust = ""
-    for currency_to in currency_to_list:
-        currency_to_reqeust += f'currency_to={currency_to}' if not len(
-            currency_to_reqeust) else f'&currency_to={currency_to}'
-    for way in exchange_way:
-        exchange_way_reqeust += f'exchange_way={way}' if not len(
-            exchange_way_reqeust) else f'&exchange_way={way}'
-    return currency_to_reqeust + '&' + exchange_way_reqeust
-
-
-async def create_conversion_request(currency_to_list: List[str], exchange_way: List[str],
-                                    currency_from_list: List[str]) -> str:
-    conversion_request = await create_byn_request(currency_to_list, exchange_way)
-    currency_from_reqeust = ""
-    for currency_from in currency_from_list:
-        currency_from_reqeust += f'currency_from={currency_from}' if not len(
-            currency_from_reqeust) else f'&currency_from={currency_from}'
-    return conversion_request + "&" + currency_from_reqeust
 
 
 async def cancel_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -185,9 +166,9 @@ async def cancel_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def handle_response(text: str) -> str:
     user_message = text.lower()
-    user_query_splited = user_message.split()
+    user_query_split = user_message.split()
     final_query = []
-    for word in user_query_splited:
+    for word in user_query_split:
         final_query.append(morpher.parse(word)[0].normal_form)
     user_query_vector = vectorizer.transform([' '.join(map(str, final_query))])
     similarity_scores = cosine_similarity(key_lemmas_vectors, user_query_vector)

@@ -1,9 +1,20 @@
+# todo delete uvicorn fast_api:app --reload --port 9000
 import numpy as np
 from fastapi import FastAPI, Query, Response
 from modules.currency import CurrencyParsing, CurrencyExchange
 from typing import List
 
 app = FastAPI()
+
+
+# todo causes error Unresolved reference for variables
+# @app.on_event("startup")
+# async def startup_event():
+    # currency_parsing = CurrencyParsing()
+    # currency_exchange = CurrencyExchange()
+    # currency_exchange.read_dataframe_csv()
+    # currency_exchange.df_expand_conversion()
+
 
 @app.get("/currency/uploaded_currency")
 async def parse_currency():
