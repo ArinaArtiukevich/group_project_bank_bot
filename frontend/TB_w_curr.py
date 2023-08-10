@@ -10,6 +10,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, Conversati
 load_dotenv()
 FAST_API_HOST = os.environ['FAST_API_HOST']
 FAST_API_PORT = os.environ['FAST_API_PORT']
+TELEGRAM_BOT_KEY = os.environ['TELEGRAM_BOT_KEY']
 
 CHOICE, FAQ, ATM, CURRENCY, DEFAULT_EXCHANGE, CURRENCY_FROM, CURRENCY_TO, EXCHANGE_WAY = range(8)
 
@@ -205,7 +206,7 @@ async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
 if __name__ == '__main__':
     print('Bot Started')
 
-    app = Application.builder().token('5994105371:AAGWpu-xD3dcVA9A7IH31j9lmD3wdlXcxls').build()
+    app = Application.builder().token(f'{TELEGRAM_BOT_KEY}').build()
 
     conv_handler = ConversationHandler(
             entry_points=[CommandHandler("start", start)],
