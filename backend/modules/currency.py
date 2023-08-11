@@ -7,8 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-from utilities.constants import CURRENCY_DF_PATH
-
+CURRENCY_DF_PATH = './data/priorbank_currency_exchange.csv'
 
 class CurrencyParsing:
     BASIC_URL = 'https://www.priorbank.by/offers/services/currency-exchange'

@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5db1ce85-a9ca-4a74-ba62-39a0350ab8de" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/TB_w_curr.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/TB_w_curr.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/currency.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/currency.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -237,7 +236,14 @@
       <option name="project" value="LOCAL" />
       <updated>1691657302807</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="updated">
+      <created>1691660194568</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1691660194568</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -258,6 +264,7 @@
     <MESSAGE value="files added" />
     <MESSAGE value="deploy branch created" />
     <MESSAGE value="env added" />
-    <option name="LAST_COMMIT_MESSAGE" value="env added" />
+    <MESSAGE value="updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated" />
   </component>
 </project>
