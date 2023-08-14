@@ -2,6 +2,7 @@ import numpy as np
 import pymorphy2
 import joblib
 import datetime
+import uvicorn
 from typing import List
 
 
@@ -88,3 +89,6 @@ class Address(BaseModel):
 def find_nearest(request: Address):
     response = nearest_atm(request.address)
     return response.encode('utf-8')
+
+if __name__ == "__main__":
+    uvicorn.run("fast_api:app", host="127.0.0.1", port=8000, log_level="info")
