@@ -1,0 +1,11 @@
+version: '1.0'
+
+services:
+
+  backend_app:
+    build: backend/.
+    container_name: backend-app
+    ports:
+      - '1111:1111'
+    restart: unless-stopped
+

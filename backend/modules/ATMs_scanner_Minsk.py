@@ -12,8 +12,17 @@ from typing import Dict
 
 # Получаем всю информацию о банкоматах с первоначальной страницы (Минск). Ключ - по названию (по координатам не работает, т.к. могут быть одинаковые адреса). 
 def atms_info_generator() -> Dict:
+    # todo del
+    # я делала так, у меня работало
+    # chrome_options = webdriver.chrome.options.Options()
+    # chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--no-sandbox')
+    # chrome_options.add_argument('--disable-dev-shm-usage')
+    # driver = webdriver.Chrome(options=chrome_options)
+
     s = Service('C:\chromedriver\chromedriver.exe')
     driver = webdriver.Chrome(service = s)
+
     driver.get('https://www.prior.by/maps')
     time.sleep(1) # задержка для запуска дравера, чтобы странница полностью прогрузилась, иначе "кнопки" могут не сработать
     # переключаемся с вида "карта" на вид "список"

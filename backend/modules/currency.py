@@ -4,17 +4,15 @@ import bs4
 from typing import List
 
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 
 CURRENCY_DF_PATH = './data/priorbank_currency_exchange.csv'
 
 class CurrencyParsing:
     BASIC_URL = 'https://www.priorbank.by/offers/services/currency-exchange'
 
-    def __init__(self, url: str = None, driver: webdriver = webdriver.Chrome(service=Service(ChromeDriverManager(version="114.0.5735.90").install())), save_link: str = CURRENCY_DF_PATH):
-        self.url = url if url != None else self.BASIC_URL
-        self.driver = driver
+    def __init__(self, url: str = None, save_link: str = CURRENCY_DF_PATH):
+        self.url = url if url is not None else self.BASIC_URL
         self.save_link = save_link
         self.df: pd.DataFrame
 
@@ -45,12 +43,17 @@ class CurrencyParsing:
         return df
 
     def create_currency_dataframe(self) -> pd.DataFrame:
+        chrome_options = webdriver.chrome.options.Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        driver = webdriver.Chrome(options=chrome_options)
+
         df = pd.DataFrame(columns=['exchange_way', 'currency', 'buy', 'sell', 'buy_sell', 'conversion'])
-        self.driver.get(self.url)
-        driver_parser = bs4.BeautifulSoup(self.driver.page_source, features="html.parser")
+        driver.get(self.url)
+        driver_parser = bs4.BeautifulSoup(driver.page_source, features="html.parser")
 
         exchange_way_categories = driver_parser.find('ul', attrs={'class': 'toggle__list'})
-
         list_exchange_way = exchange_way_categories.find_all('li')
         divs_exchange_way = driver_parser.find_all('div', attrs={'class': 'smartfox--calc'})
         # [цифровой банк, по карточке, наличные]
