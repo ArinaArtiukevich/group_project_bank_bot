@@ -6,14 +6,15 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 
+from webdriver_manager.chrome import ChromeDriverManager
+
 from scipy.spatial.distance import cdist
 
 from typing import Dict
 
 # Получаем всю информацию о банкоматах с первоначальной страницы (Минск). Ключ - по названию (по координатам не работает, т.к. могут быть одинаковые адреса). 
 def atms_info_generator() -> Dict:
-    s = Service('C:\chromedriver\chromedriver.exe')
-    driver = webdriver.Chrome(service = s)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager(version="114.0.5735.90").install()))
     driver.get('https://www.prior.by/maps')
     time.sleep(1) # задержка для запуска дравера, чтобы странница полностью прогрузилась, иначе "кнопки" могут не сработать
     # переключаемся с вида "карта" на вид "список"
@@ -47,11 +48,12 @@ def atms_info_generator() -> Dict:
     atms_full_info = dict()
     for i in range(len(atm_name)):
         atms_full_info[atm_name[i]] = [[float(atm_coords[i][0]), float(atm_coords[i][1])], atms_adr_list[i], atm_worktime[i]]
-
     # Записываем данные в файл
     with open("atms_full_info.json", "w") as file:
         # Convert dictionary to a string using json.dumps()
         dict_str = json.dumps(atms_full_info)
         file.write(dict_str)
-
     return atms_full_info
+
+
+atms_info_generator()
