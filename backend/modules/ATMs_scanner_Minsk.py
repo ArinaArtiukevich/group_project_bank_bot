@@ -12,7 +12,7 @@ from typing import Dict
 
 # Получаем всю информацию о банкоматах с первоначальной страницы (Минск). Ключ - по названию (по координатам не работает, т.к. могут быть одинаковые адреса). 
 def atms_info_generator() -> Dict:
-    s = Service('C:\chromedriver\chromedriver.exe')
+    s = Service(executable_path=None, port=0)
     driver = webdriver.Chrome(service = s)
     driver.get('https://www.prior.by/maps')
     time.sleep(1) # задержка для запуска дравера, чтобы странница полностью прогрузилась, иначе "кнопки" могут не сработать
