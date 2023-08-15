@@ -56,7 +56,7 @@ async def process_choice(update, context):
 
 def handle_response(text: str):
     user_message = text.lower()
-    response = requests.get(f'{FAST_API_HOST}:{FAST_API_PORT}/respond_on_question/{user_message}')
+    response = requests.get(f'http://{FAST_API_HOST}:{FAST_API_PORT}/respond_on_question/{user_message}')
     return response.text
 
 async def faq_response(update, context):
@@ -67,7 +67,7 @@ async def faq_response(update, context):
 
 async def closest_atm(update, context):
     location_text = update.message.text
-    link = f"{FAST_API_HOST}:{FAST_API_PORT}/find"
+    link = f"http://{FAST_API_HOST}:{FAST_API_PORT}/find"
     atm_info = requests.post(url=link, json={'address': location_text})
     await update.message.reply_text(f"Ближайший банкомат:\n{atm_info.text}")
     return ConversationHandler.END
@@ -177,13 +177,13 @@ async def exchange_way_command(update: Update, context: ContextTypes.DEFAULT_TYP
         )
     else:
         if context.user_data['BYN']:
-            request = f'{FAST_API_HOST}:{FAST_API_PORT}' + '/currency/BYN'
+            request = f'http://{FAST_API_HOST}:{FAST_API_PORT}' + '/currency/BYN'
             params = {
                 'currency_to': context.user_data['currency_to'],
                 'exchange_way': exchange_way
             }
         else:
-            request = f'{FAST_API_HOST}:{FAST_API_PORT}' + '/currency/conversion'
+            request = f'http://{FAST_API_HOST}:{FAST_API_PORT}' + '/currency/conversion'
             params = {
                 'currency_to': context.user_data['currency_to'],
                 'exchange_way': exchange_way,

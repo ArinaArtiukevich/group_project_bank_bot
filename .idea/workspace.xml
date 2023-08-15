@@ -5,11 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5db1ce85-a9ca-4a74-ba62-39a0350ab8de" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/fast_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/fast_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/ATMs_scanner_Minsk.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/ATMs_scanner_Minsk.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/currency.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/currency.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/telegram_bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/telegram_bot.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -275,7 +275,21 @@
       <option name="project" value="LOCAL" />
       <updated>1692098076757</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Ready for docker image">
+      <created>1692098105778</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1692098105778</updated>
+    </task>
+    <task id="LOCAL-00015" summary="dockerignore added">
+      <created>1692100470844</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1692100470844</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -301,6 +315,8 @@
     <MESSAGE value="requirements added" />
     <MESSAGE value="uvicorn run added" />
     <MESSAGE value="Dockerfile added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dockerfile added" />
+    <MESSAGE value="Ready for docker image" />
+    <MESSAGE value="dockerignore added" />
+    <option name="LAST_COMMIT_MESSAGE" value="dockerignore added" />
   </component>
 </project>
