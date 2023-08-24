@@ -21,14 +21,14 @@ CURRENCY_AVAILABLE = [['USD', 'EUR', 'RUB']]
 async def start(update, context):
     keyboard = [
         [InlineKeyboardButton("FAQ", callback_data="faq")],
-        [InlineKeyboardButton("Банкомат", callback_data="atm")],
-        [InlineKeyboardButton("Обмен валют", callback_data="exchange")]
+        [InlineKeyboardButton("Ближайший банкомат", callback_data="atm")],
+        [InlineKeyboardButton("Курсы валют", callback_data="exchange")]
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
-        "Привет! Выбери один из вариантов:",
+        "Вас приветствует чат-бот Приорбанка!\nПожалуйста, выберите интересующую Вас функцию:",
         reply_markup=reply_markup
     )
     return CHOICE
@@ -38,16 +38,16 @@ async def process_choice(update, context):
     await query.answer()
     data = query.data
     if data == 'faq':
-        await query.message.reply_text("Задайте вопрос")
+        await query.message.reply_text("Задайте вопрос:")
         return FAQ
     if data == 'atm':
-        await query.message.reply_text("Введите свое местоположение:")
+        await query.message.reply_text("Укажите адрес, по которому Вы находитесь:")
         return ATM
     if data == 'exchange':
         await query.message.reply_text(
-            "Для более точного ответа необходимо ответить на дополнительные вопросы.\n"
-            "Команда /cancel, чтобы прекратить разговор.\n\n"
-            "Пожалуйста, выберите интересующий обмен.",
+            "Просим указать дополнительные параметры.\n"
+            "Введите команду /cancel, чтобы прекратить разговор.\n\n"
+            "Пожалуйста, выберите валюту продажи:",
             reply_markup=ReplyKeyboardMarkup(
                 EXCHANGE_AIM, one_time_keyboard=True
             ),
@@ -126,7 +126,7 @@ async def currency_from_command(update: Update, context: ContextTypes.DEFAULT_TY
     else:
         context.user_data["currency_from"] = currency_from_input
         await update.message.reply_text(
-            "Пожалуйста, выберите интересуемую валюту.",
+            "Выберите валюту покупки:",
             reply_markup=ReplyKeyboardMarkup(
                 CURRENCY_AVAILABLE, one_time_keyboard=True
             ),
@@ -156,7 +156,7 @@ async def currency_to_command(update: Update, context: ContextTypes.DEFAULT_TYPE
                 result = ConversationHandler.END
         if result is not ConversationHandler.END:
             await update.message.reply_text(
-                "Пожалуйста, выберите способ обмена.",
+                "Выберите способ обмена.",
                 reply_markup=ReplyKeyboardMarkup(
                     EXCHANGE_CHOICE_WAY, one_time_keyboard=True
                 ),

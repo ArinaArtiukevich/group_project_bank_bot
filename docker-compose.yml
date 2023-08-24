@@ -2,16 +2,16 @@ version: '3.5'
 
 services:
 
-  chatbot:
+  gp_bank_1_chatbot:
     build: backend/.
-    container_name: bot-app
+    container_name: gp_bank_1_bot-app
     restart: unless-stopped
 
-  telegram-bot:
+  gp_bank_1_telegram-bot:
     build: frontend/.
-    container_name: telegram-app
+    container_name: gp_bank_1_telegram-app
     restart: unless-stopped
     environment:
-      - 'FAST_API_HOST=chatbot'
+      - 'FAST_API_HOST=gp_bank_1_chatbot'
       - 'FAST_API_PORT=1275'
       - 'TELEGRAM_BOT_KEY=5994105371:AAGWpu-xD3dcVA9A7IH31j9lmD3wdlXcxls'
