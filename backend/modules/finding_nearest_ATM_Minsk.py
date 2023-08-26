@@ -5,19 +5,25 @@ import numpy as np
 
 from scipy.spatial.distance import cdist
 
+POSITIONSTACK_API_KEY = 'd5e4e082ea5dab45f210088ac96a0822'
+HERE_API_KEY = 'Q5rrnhZIet5Wp1bd2EQ23AFQx5FmYvGEa40Wkr5dYlI'
 
-def get_coordinates(adress: str):
-    api_key = 'e070aeb5e415e5befeb62a5d9b892389'
-    position_url = f'http://api.positionstack.com/v1/forward?access_key={api_key}&query=Минск, {adress}'
+def get_coordinates(address: str):
+    position_url = f'http://api.positionstack.com/v1/forward?access_key={POSITIONSTACK_API_KEY}&query={address}'
     response = requests.get(url=position_url)
-    geo_data = response.json()
-    return geo_data
+    if response.ok:
+        geo_data = response.json()
+        return geo_data['data'][0].get('latitude'), geo_data['data'][0].get('longitude') 
+    else: 
+        api_key = HERE_API_KEY
+        position_url = f"https://geocode.search.hereapi.com/v1/geocode?q={address}&apiKey={HERE_API_KEY}"
+        response = requests.get(url=position_url)
+        geo_data = response.json()
+        return geo_data['items'][0].get('position')['lat'], geo_data['items'][0].get('position')['lng'] 
 
 
-# !!! atms_info - переменная, в которую должен быть записан словарь с информацией о всех банкоматах (из atms_info_generator())
 def nearest_atm(my_address: str) -> str:
-    my_position = get_coordinates(adress = my_address)
-    my_coords = [[my_position['data'][0].get('latitude'), my_position['data'][0].get('longitude')]]
+    my_coords = get_coordinates(address = my_address)
     with open("./modules/atms_full_info.json", "r") as file:
         atms_info = json.loads(file.read())
     atms_coords = []
