@@ -6,6 +6,9 @@ services:
     build: backend/.
     container_name: gp_bank_1_bot-app
     restart: unless-stopped
+    environment:
+      - 'POSITIONSTACK_API_KEY=d5e4e082ea5dab45f210088ac96a0822'
+      - 'HERE_API_KEY=Q5rrnhZIet5Wp1bd2EQ23AFQx5FmYvGEa40Wkr5dYlI'
 
   gp_bank_1_telegram-bot:
     build: frontend/.

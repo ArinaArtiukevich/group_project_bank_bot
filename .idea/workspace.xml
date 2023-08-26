@@ -7,6 +7,10 @@
     <list default="true" id="5db1ce85-a9ca-4a74-ba62-39a0350ab8de" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/fast_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/fast_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/currency.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/currency.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/modules/finding_nearest_ATM_Minsk.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/modules/finding_nearest_ATM_Minsk.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +60,7 @@
       <recent name="C:\Users\Alex-01\Projects\gp_bank_1\modules" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.ATMs_scanner_Minsk">
+  <component name="RunManager" selected="Python.fast_api">
     <configuration name="ATMs_scanner_Minsk" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="gp_bank_1" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -164,8 +168,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.ATMs_scanner_Minsk" />
         <item itemvalue="Python.fast_api" />
+        <item itemvalue="Python.ATMs_scanner_Minsk" />
         <item itemvalue="Python.telegram_bot" />
         <item itemvalue="Python.env_check" />
         <item itemvalue="Python.TB_w_curr" />
@@ -293,7 +297,14 @@
       <option name="project" value="LOCAL" />
       <updated>1692873320013</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="parser on time added">
+      <created>1693040698601</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1693040698601</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -322,6 +333,7 @@
     <MESSAGE value="Ready for docker image" />
     <MESSAGE value="dockerignore added" />
     <MESSAGE value="images names updated" />
-    <option name="LAST_COMMIT_MESSAGE" value="images names updated" />
+    <MESSAGE value="parser on time added" />
+    <option name="LAST_COMMIT_MESSAGE" value="parser on time added" />
   </component>
 </project>

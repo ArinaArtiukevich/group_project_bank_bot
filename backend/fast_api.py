@@ -6,6 +6,7 @@ import uvicorn
 from typing import List
 
 
+from spellchecker import SpellChecker
 from pydantic import BaseModel
 from fastapi import FastAPI, Query
 from sklearn.metrics.pairwise import cosine_similarity
@@ -18,12 +19,14 @@ morpher = pymorphy2.MorphAnalyzer()
 key_lemmas_vectors = joblib.load('./utilities/lemmas.pickle')
 vectorizer = joblib.load('./utilities/vectorizer.pickle')
 X = joblib.load('./utilities/keys_responses.pickle')
+spell = SpellChecker(language='ru')
 
 app = FastAPI()
 
 @app.on_event("startup")
 def parse_currency():
     currency_parsing = CurrencyParsing()
+    currency_parsing.create_currency_dataframe()
     scheduler = BackgroundScheduler()
     scheduler.add_job(
         currency_parsing.create_currency_dataframe,
@@ -65,13 +68,17 @@ async def exchange_byn(currency_to: List[str] | None = Query(), exchange_way: Li
 async def respond_on_question(txt: str):
     user_message = txt.lower()
     user_query_splited = user_message.split()
+    user_query_splited = [word if spell.correction(word) is None else spell.correction(word) for word in user_query_splited]
     final_query = []
     for word in user_query_splited:
         final_query.append(morpher.parse(word)[0].normal_form)
     user_query_vector = vectorizer.transform([' '.join(map(str, final_query))])
     similarity_scores = cosine_similarity(key_lemmas_vectors, user_query_vector)
-    most_similar_index = similarity_scores.argmax()
-    return X['Response'].iloc[most_similar_index].encode('utf-8')
+    if similarity_scores.max() > 0.4:
+        most_similar_index = similarity_scores.argmax()
+        return X['Response'].iloc[most_similar_index].encode('utf-8')
+    else:
+        return ('Пожалуйста, уточните или переформулируйте вопрос').encode('utf-8')
 
 class Address(BaseModel):
     address: str

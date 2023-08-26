@@ -51,8 +51,8 @@ class CurrencyParsing:
         driver = webdriver.Chrome(options=chrome_options)
 
         df = pd.DataFrame(columns=['exchange_way', 'currency', 'buy', 'sell', 'buy_sell', 'conversion'])
-        self.driver.get(self.url)
-        driver_parser = bs4.BeautifulSoup(self.driver.page_source, features="html.parser")
+        driver.get(self.url)
+        driver_parser = bs4.BeautifulSoup(driver.page_source, features='html.parser')
 
         exchange_way_categories = driver_parser.find('ul', attrs={'class': 'toggle__list'})
 
